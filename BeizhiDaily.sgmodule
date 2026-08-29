@@ -1,0 +1,18 @@
+#!name=Beizhi 每日签到
+#!desc=每天定时访问 https://beizhi.sylu.cc（New API）完成 2 个账号签到并返回当前额度通知。安装后先登录账户页捕获 Cookie：在 Surge 开启本模块，浏览器登录 beizhi.sylu.cc 并打开“个人/账户”页一次即可自动保存 Cookie。
+#!author=Hermes Agent
+#!homepage=https://beizhi.sylu.cc
+#!icon=https://beizhi.sylu.cc/logo.png
+#!category=签到
+#!arguments=定时时间:30 8 * * *,定时任务:Beizhi Daily,获取Cookie:Beizhi Cookie,MITM:hostname,通知:true,Cookie通知:true,策略:DIRECT
+#!arguments-desc=定时时间：Cron 表达式，默认每天 08:30 执行。\n\n定时任务：控制每日自动签到脚本，输入 # 表示禁用定时。\n\n获取Cookie：控制打开账户页时捕获 Cookie，输入 # 表示禁用 Cookie 获取脚本。\n\nMITM：控制是否追加 beizhi.sylu.cc 到 MITM，输入 # 表示禁用 MITM。\n\n通知：true/false，控制每日任务和异常通知。\n\nCookie通知：true/false，控制 Cookie 获取成功/失败通知（失败通知始终保留）。\n\n策略：Surge 请求策略，默认 DIRECT；如需代理可改为你的策略组或节点名。
+
+[Script]
+# 获取 Cookie：登录后手动打开 https://beizhi.sylu.cc 任意账户页即可捕获 Cookie 并保存（支持多账号，默认 2 个）
+{{{获取Cookie}}} = type=http-request,pattern=^https:\/\/beizhi\.sylu\.cc\/api\/user\/(self|checkin|token|models)(\?.*)?$,script-path=beizhi-checkin.js,timeout=10,argument="notify={{{通知}}}&cookieNotify={{{Cookie通知}}}",debug=true
+
+# 每日计划任务：默认每天 08:30；可在“编辑参数”里修改定时时间，或把“定时任务”改成 # 禁用
+{{{定时任务}}} = type=cron,cronexp="{{{定时时间}}}",script-path=beizhi-checkin.js,timeout=30,wake-system=true,argument="notify={{{通知}}}&cookieNotify={{{Cookie通知}}}&policy={{{策略}}}",debug=true
+
+[MITM]
+{{{MITM}}} = %APPEND% beizhi.sylu.cc
