@@ -15,10 +15,10 @@
 {{{CAPTURE}}} = type=http-response,pattern=^https:\/\/beizhi\.dedyn\.io\/api\/user\/login(?:\?.*)?$,requires-body=true,max-size=1048576,timeout=15,script-path=https://raw.githubusercontent.com/REPLACE_ME/surge-beizhi-checkin/main/beizhi_checkin.js,script-update-interval=86400,argument="captureEnabled={{{CAPTURE}}}&notify={{{NOTIFY}}}&baseUrl={{{BASE_URL}}}"
 
 # 定时签到。把 TASK_NAME 的值改成单个井号字符，整行就会变成注释。
-{{{TASK_NAME}}} = type=cron,cronexp="{{{TIME}}}",script-path=https://raw.githubusercontent.com/REPLACE_ME/surge-beizhi-checkin/main/beizhi_checkin.js,script-update-interval=86400,timeout=180,wake-system=true,argument="token={{{TOKEN}}}&userId={{{USER_ID}}}&policy={{{POLICY}}}&timeout={{{TIMEOUT}}}&notify={{{NOTIFY}}}&lowBalance={{{LOW_BALANCE}}}&fillMissingDays={{{FILL_MISSING_DAYS}}}&baseUrl={{{BASE_URL}}}"
+{{{TASK_NAME}}} = type=cron,cronexp="{{{TIME}}}",script-path=https://raw.githubusercontent.com/Suk1u/BeizhiDaily/refs/heads/main/beizhi_checkin.js,script-update-interval=86400,timeout=180,wake-system=true,argument="token={{{TOKEN}}}&userId={{{USER_ID}}}&policy={{{POLICY}}}&timeout={{{TIMEOUT}}}&notify={{{NOTIFY}}}&lowBalance={{{LOW_BALANCE}}}&fillMissingDays={{{FILL_MISSING_DAYS}}}&baseUrl={{{BASE_URL}}}"
 
 # 信息面板：余额、今日签到获得、本月累计、连续天数。
-北栀签到脚本 = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/REPLACE_ME/surge-beizhi-checkin/main/beizhi_checkin.js,script-update-interval=86400
+北栀签到脚本 = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/Suk1u/BeizhiDaily/refs/heads/main/beizhi_checkin.js,script-update-interval=86400
 
 [MITM]
 hostname = %APPEND% {{{MITM_HOST}}}
