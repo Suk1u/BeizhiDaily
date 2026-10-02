@@ -1,0 +1,24 @@
+#!name=北栀 Liminality 签到
+#!desc=beizhi.dedyn.io 每日自动签到：定时签到并把「余额」与「签到获得」记进面板与账本。首次使用：手机浏览器登录一次 beizhi.dedyn.io（模块需已启用），脚本会自动抓取凭据；然后打开 Surge 面板刷新即可看到余额。无需手填令牌。
+#!author=海鸥 (Surge)
+#!category=签到
+#!icon=checkmark.seal
+#!arguments=TIME:0 9 * * *,TASK_NAME:北栀签到,CAPTURE:北栀凭据捕获,TOKEN:未配置,USER_ID:未配置,PANEL_NAME:北栀签到面板,POLICY:未配置,TIMEOUT:20,NOTIFY:true,LOW_BALANCE:0,FILL_MISSING_DAYS:false,MITM_HOST:beizhi.dedyn.io,BASE_URL:beizhi.dedyn.io
+#!arguments-desc=【TIME】定时时间，cron 表达式，默认每天 09:00。\n【TASK_NAME】定时任务名，改成 # 关闭定时签到。\n【CAPTURE】登录抓取脚本名，改成 # 关闭自动抓取（关闭后请手动填 TOKEN）。\n【TOKEN】面板访问令牌（个人设置里生成）。留「未配置」时自动使用抓取到的凭据。\n【USER_ID】用户 ID。留「未配置」时自动使用抓取到的凭据。\n【PANEL_NAME】面板名，改成 # 关闭面板。\n【POLICY】出站策略或策略组，留「未配置」表示按分流规则。\n【TIMEOUT】单次请求超时秒数。\n【NOTIFY】是否发送结果通知，true/false。\n【LOW_BALANCE】余额低于该金额时额外提醒，0 表示不提醒。\n【FILL_MISSING_DAYS】是否用本月签到明细回填历史单日获得，true/false。\n【MITM_HOST】需要解密的域名，抓取凭据用。\n【BASE_URL】站点域名，只填域名不要带 https://。\n注：所有参数都必须有值，留空会导致模块无法加载；不需要的参数请保留默认值。
+
+[Panel]
+{{{PANEL_NAME}}} = title="北栀签到",content="等待首次运行",style=info,script-name=北栀签到脚本,update-interval=3600
+
+[Script]
+# 凭据抓取：登录响应里带 access_token 与 user.id，脚本据此保存凭据。
+# 把 CAPTURE 的值改成单个井号字符可关闭本行（此时需要手动填 TOKEN / USER_ID）。
+{{{CAPTURE}}} = type=http-response,pattern=^https:\/\/beizhi\.dedyn\.io\/api\/user\/login(?:\?.*)?$,requires-body=true,max-size=1048576,timeout=15,script-path=https://raw.githubusercontent.com/REPLACE_ME/surge-beizhi-checkin/main/beizhi_checkin.js,script-update-interval=86400,argument="captureEnabled={{{CAPTURE}}}&notify={{{NOTIFY}}}&baseUrl={{{BASE_URL}}}"
+
+# 定时签到。把 TASK_NAME 的值改成单个井号字符，整行就会变成注释。
+{{{TASK_NAME}}} = type=cron,cronexp="{{{TIME}}}",script-path=https://raw.githubusercontent.com/REPLACE_ME/surge-beizhi-checkin/main/beizhi_checkin.js,script-update-interval=86400,timeout=180,wake-system=true,argument="token={{{TOKEN}}}&userId={{{USER_ID}}}&policy={{{POLICY}}}&timeout={{{TIMEOUT}}}&notify={{{NOTIFY}}}&lowBalance={{{LOW_BALANCE}}}&fillMissingDays={{{FILL_MISSING_DAYS}}}&baseUrl={{{BASE_URL}}}"
+
+# 信息面板：余额、今日签到获得、本月累计、连续天数。
+北栀签到脚本 = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/REPLACE_ME/surge-beizhi-checkin/main/beizhi_checkin.js,script-update-interval=86400
+
+[MITM]
+hostname = %APPEND% {{{MITM_HOST}}}
